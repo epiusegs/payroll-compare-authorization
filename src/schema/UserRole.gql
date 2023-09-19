@@ -1,0 +1,21 @@
+extend type Query {
+  userRole(id: ID!): UserRole
+  userRoles(userId: ID, roleId: ID): [UserRole!]!
+}
+
+extend type Mutation {
+  createUserRole(userId: ID!, roleId: ID!): UserRole!
+  updateUserRole(id: ID!, userId: ID!, roleId: String!): UserRole!
+  deleteUserRole(id: ID!): UserRole!
+}
+
+type UserRole {
+  id: ID!
+  clientId: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime
+  userId: ID!
+  roleId: ID!
+  user: User!
+  role: Role!
+}

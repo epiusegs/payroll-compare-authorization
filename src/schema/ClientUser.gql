@@ -1,0 +1,20 @@
+extend type Query {
+  clientUser(id: ID!): ClientUser
+  clientUsers(clientId: ID, userId: ID): [ClientUser!]!
+}
+
+extend type Mutation {
+  createClientUser(clientId: ID!, userId: ID!): ClientUser!
+  updateClientUser(id: ID!, clientId: ID!, userId: ID!): ClientUser!
+  deleteClientUser(id: ID!): ClientUser!
+}
+
+type ClientUser {
+  id: ID!
+  clientId: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  userId: ID!
+  client: Client!
+  user: User!
+}

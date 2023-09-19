@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Client {
+  id                   String       @id @default(cuid())
+  createdAt            DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt            DateTime?    @updatedAt @db.Timestamptz(6)
+  name                 String       @unique
+  clientUsers          ClientUser[]
+  currentSelectedUsers User[] // these are the users that have selected this client
+}
+
+model User {
+  id               String       @id @default(cuid())
+  createdAt        DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt        DateTime?    @updatedAt @db.Timestamptz(6)
+  name             String?
+  email            String?      @unique
+  selectedClientId String?
+  selectedClient   Client?      @relation(fields: [selectedClientId], references: [id])
+  clientUsers      ClientUser[]
+  userRoles        UserRole[]
+}
+
+model Role {
+  id        String     @id @default(cuid())
+  clientId  String
+  createdAt DateTime   @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime?  @updatedAt @db.Timestamptz(6)
+  name      String
+  userRoles UserRole[]
+}
+
+model UserRole {
+  id        String    @id @default(cuid())
+  clientId  String?
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime? @updatedAt @db.Timestamptz(6)
+  userId    String
+  roleId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      Role      @relation(fields: [roleId], references: [id], onDelete: Cascade)
+}
+
+model ClientUser {
+  id        String    @id @default(cuid())
+  clientId  String
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime? @updatedAt @db.Timestamptz(6)
+  userId    String
+  client    Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

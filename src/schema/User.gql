@@ -1,0 +1,23 @@
+extend type Query {
+  user(id: ID!): User
+  users: [User!]!
+}
+
+extend type Mutation {
+  createUser(name: String!, email: String!): User!
+  updateUser(id: ID!, name: String!, email: String!): User!
+  deleteUser(id: ID!): User!
+  selectClient(userId: String, clientId: String): User!
+}
+
+type User {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime
+  name: String!
+  email: String!
+  selectedClientId: String
+  selectedClient: Client
+  clientUsers: [ClientUser!]!
+  userRoles: [UserRole!]!
+}

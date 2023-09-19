@@ -13,8 +13,8 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitAny": true,
-    "skipLibCheck": false /* Skip type checking all .d.ts files. */,
-    "declaration": true
+    "skipLibCheck": false /* Skip type checking all .d.ts files. */
   },
-  "include": ["src"]
+  "assets": ["src/**/*.gql", "src/**/*.graphql"],
+  "include": ["src/**/*"]
 }
