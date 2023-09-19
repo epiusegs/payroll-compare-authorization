@@ -16,17 +16,21 @@ const resolverComponents = [
 ];
 
 const resolvers = resolverComponents.reduce(
-  (r, { name: componentName, component }) => {return {
-    ...r,
-    Query: {
-      ...r.Query,
-      ...component.query,
-    },
-    [componentName]: component.resolver,
-  }},
+  (r, { name: componentName, component }) => {
+    return {
+      ...r,
+      Query: {
+        ...r.Query,
+        ...component.query,
+      },
+      [componentName]: component.resolver,
+    };
+  },
   {
     Query: {
-      health: () => {return 'GraphQL is running'},
+      health: () => {
+        return 'GraphQL is running';
+      },
     },
   }
 );

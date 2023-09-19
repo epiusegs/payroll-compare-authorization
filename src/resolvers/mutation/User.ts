@@ -10,25 +10,30 @@ type UserUpdateInput = {
 type UserDeleteInput = {
   id: string;
 };
+type UserSelectClientInput = {
+  userId: string;
+  clientId: string;
+};
 
 export const mutation = {
   createUser: (
     parent: unknown,
     args: UserCreateInput,
     context: GraphQLContext
-  ) =>
-    {return context.prisma.user.create({
+  ) => {
+    return context.prisma.user.create({
       data: {
         name: args.name,
         email: args.email,
       },
-    })},
+    });
+  },
   updateUser: (
     parent: unknown,
     args: UserUpdateInput,
     context: GraphQLContext
-  ) =>
-    {return context.prisma.user.update({
+  ) => {
+    return context.prisma.user.update({
       data: {
         name: args.name,
         email: args.email,
@@ -36,17 +41,33 @@ export const mutation = {
       where: {
         id: args.id,
       },
-    })},
+    });
+  },
   deleteUser: (
     parent: unknown,
     args: UserDeleteInput,
     context: GraphQLContext
-  ) =>
-    {return context.prisma.user.delete({
+  ) => {
+    return context.prisma.user.delete({
       where: {
         id: args.id,
       },
-    })},
+    });
+  },
+  selectClient: (
+    parent: unknown,
+    args: UserSelectClientInput,
+    context: GraphQLContext
+  ) => {
+    return context.prisma.user.update({
+      data: {
+        selectedClientId: args.clientId,
+      },
+      where: {
+        id: args.userId,
+      },
+    });
+  },
 };
 
 export default {

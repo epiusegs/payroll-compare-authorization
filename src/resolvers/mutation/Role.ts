@@ -16,19 +16,20 @@ export const mutation = {
     parent: unknown,
     args: RoleCreateInput,
     context: GraphQLContext
-  ) =>
-    {return context.prisma.role.create({
+  ) => {
+    return context.prisma.role.create({
       data: {
         clientId: args.clientId,
         name: args.name,
       },
-    })},
+    });
+  },
   updateRole: (
     parent: unknown,
     args: RoleUpdateInput,
     context: GraphQLContext
-  ) =>
-    {return context.prisma.role.update({
+  ) => {
+    return context.prisma.role.update({
       data: {
         clientId: args.clientId,
         name: args.name,
@@ -36,17 +37,19 @@ export const mutation = {
       where: {
         id: args.id,
       },
-    })},
+    });
+  },
   deleteRole: (
     parent: unknown,
     args: RoleDeleteInput,
     context: GraphQLContext
-  ) =>
-    {return context.prisma.role.delete({
+  ) => {
+    return context.prisma.role.delete({
       where: {
         id: args.id,
       },
-    })},
+    });
+  },
 };
 
 export default {

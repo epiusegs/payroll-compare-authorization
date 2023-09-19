@@ -16,19 +16,20 @@ export const mutation = {
     parent: unknown,
     args: ClientUserCreateInput,
     context: GraphQLContext
-  ) =>
-    {return context.prisma.clientUser.create({
+  ) => {
+    return context.prisma.clientUser.create({
       data: {
         clientId: args.clientId,
         userId: args.userId,
       },
-    })},
+    });
+  },
   updateClientUser: (
     parent: unknown,
     args: ClientUserUpdateInput,
     context: GraphQLContext
-  ) =>
-    {return context.prisma.clientUser.update({
+  ) => {
+    return context.prisma.clientUser.update({
       data: {
         clientId: args.clientId,
         userId: args.userId,
@@ -36,17 +37,19 @@ export const mutation = {
       where: {
         id: args.id,
       },
-    })},
+    });
+  },
   deleteClientUser: (
     parent: unknown,
     args: ClientUserDeleteInput,
     context: GraphQLContext
-  ) =>
-    {return context.prisma.clientUser.delete({
+  ) => {
+    return context.prisma.clientUser.delete({
       where: {
         id: args.id,
       },
-    })},
+    });
+  },
 };
 
 export default {

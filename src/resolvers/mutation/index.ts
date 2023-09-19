@@ -16,16 +16,20 @@ const muationComponents = [
 ];
 
 const muations = muationComponents.reduce(
-  (r, { component }) => {return {
-    ...r,
-    Mutation: {
-      ...r.Mutation,
-      ...component.mutation,
-    },
-  }},
+  (r, { component }) => {
+    return {
+      ...r,
+      Mutation: {
+        ...r.Mutation,
+        ...component.mutation,
+      },
+    };
+  },
   {
     Mutation: {
-      health: () => {return 'GraphQL is running'},
+      health: () => {
+        return 'GraphQL is running';
+      },
     },
   }
 );
