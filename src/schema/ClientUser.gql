@@ -5,8 +5,23 @@ extend type Query {
 
 extend type Mutation {
   createClientUser(clientId: ID!, userId: ID!): ClientUser!
+  createClientUsers(
+    clientUsers: [ClientUserCreateInput!]!
+  ): ClientUserCreateOutput!
   updateClientUser(id: ID!, clientId: ID!, userId: ID!): ClientUser!
   deleteClientUser(id: ID!): ClientUser!
+  deleteClientUsers(clientUserIds: [ID!]!): ClientUserDeleteOutput!
+}
+
+input ClientUserCreateInput {
+  clientId: ID!
+  userId: ID!
+}
+type ClientUserCreateOutput {
+  created: Int
+}
+type ClientUserDeleteOutput {
+  deleted: Int
 }
 
 type ClientUser {

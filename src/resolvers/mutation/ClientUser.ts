@@ -24,6 +24,20 @@ export const mutation = {
       },
     });
   },
+  createClientUsers: async (
+    parent: unknown,
+    args: {
+      clientUsers: ClientUserCreateInput[];
+    },
+    context: GraphQLContext
+  ) => {
+    const response = await context.prisma.clientUser.createMany({
+      data: args.clientUsers,
+    });
+    return {
+      created: response.count,
+    };
+  },
   updateClientUser: (
     parent: unknown,
     args: ClientUserUpdateInput,
@@ -49,6 +63,25 @@ export const mutation = {
         id: args.id,
       },
     });
+  },
+  deleteClientUsers: async (
+    parent: unknown,
+    args: {
+      clientUserIds: string[];
+    },
+    context: GraphQLContext
+  ) => {
+    const response = await context.prisma.clientUser.deleteMany({
+      where: {
+        id: {
+          in: args.clientUserIds,
+        },
+      },
+    });
+
+    return {
+      deleted: response.count,
+    };
   },
 };
 
