@@ -19,6 +19,8 @@ type User {
   name: String!
   email: String!
   selectedClientId: String
+  emailVerified: DateTime
+  image: String
   selectedClient: Client
   clientUsers: [ClientUser!]!
   userRoles: [UserRole!]!

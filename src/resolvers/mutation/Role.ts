@@ -18,10 +18,7 @@ export const mutation = {
     context: GraphQLContext
   ) => {
     return context.prisma.role.create({
-      data: {
-        clientId: args.clientId,
-        name: args.name,
-      },
+      data: args,
     });
   },
   updateRole: (
@@ -30,10 +27,7 @@ export const mutation = {
     context: GraphQLContext
   ) => {
     return context.prisma.role.update({
-      data: {
-        clientId: args.clientId,
-        name: args.name,
-      },
+      data: args,
       where: {
         id: args.id,
       },

@@ -1,0 +1,33 @@
+extend type Query {
+  session(id: ID!): Session
+  sessionByToken(sessionToken: String!): Session
+  sessions: [Session]!
+}
+
+extend type Mutation {
+  createSession(sessionToken: ID!, userId: ID!, expires: DateTime): Session!
+  updateSession(
+    id: ID!
+    sessionToken: ID!
+    userId: ID!
+    expires: DateTime
+  ): Session!
+  updateSessionByToken(
+    id: ID!
+    sessionToken: ID!
+    userId: ID!
+    expires: DateTime
+  ): Session!
+  deleteSession(id: ID!): Session!
+  deleteSessionByToken(sessionToken: ID!): Session!
+}
+
+type Session {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime
+  sessionToken: String!
+  userId: ID!
+  expires: DateTime!
+  user: User!
+}

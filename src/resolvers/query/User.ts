@@ -69,6 +69,12 @@ export const resolver = {
   selectedClientId: (parent: User) => {
     return parent.selectedClientId;
   },
+  emailVerified: (parent: User) => {
+    return parent.emailVerified;
+  },
+  image: (parent: User) => {
+    return parent.image;
+  },
   selectedClient: (parent: User, args: {}, context: GraphQLContext) => {
     if (!parent.selectedClientId) {
       return Promise.resolve(null);

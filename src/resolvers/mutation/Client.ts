@@ -17,9 +17,7 @@ export const mutation = {
     context: GraphQLContext
   ) => {
     return context.prisma.client.create({
-      data: {
-        name: args.name,
-      },
+      data: args,
     });
   },
   updateClient: (
@@ -28,9 +26,7 @@ export const mutation = {
     context: GraphQLContext
   ) => {
     return context.prisma.client.update({
-      data: {
-        name: args.name,
-      },
+      data: args,
       where: {
         id: args.id,
       },

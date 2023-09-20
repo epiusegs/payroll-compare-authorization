@@ -1,0 +1,71 @@
+extend type Query {
+  account(id: ID!): Account
+  accountByProvider(
+    provider: AccountProviderIds!
+    providerAccountId: ID!
+  ): Account
+  accounts: [Account]!
+}
+
+extend type Mutation {
+  createAccount(
+    userId: ID!
+    type: AccountProviderType!
+    provider: AccountProviderIds!
+    providerAccountId: ID!
+    refresh_token: String
+    access_token: String
+    expires_at: Int
+    token_type: String
+    scope: String
+    id_token: String
+    session_state: String
+  ): Account!
+  updateAccount(
+    id: ID!
+    userId: ID!
+    type: AccountProviderType!
+    provider: AccountProviderIds!
+    providerAccountId: ID!
+    refresh_token: String
+    access_token: String
+    expires_at: String
+    token_type: String
+    scope: String
+    id_token: String
+    session_state: String
+  ): Account!
+  deleteAccount(id: ID!): Account!
+  deleteAccountByProvider(
+    provider: AccountProviderIds!
+    providerAccountId: ID!
+  ): Account!
+}
+
+enum AccountProviderType {
+  oauth
+  email
+  credentials
+}
+
+enum AccountProviderIds {
+  cognito
+}
+
+type Account {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime
+  userId: ID!
+  type: AccountProviderType!
+  provider: AccountProviderIds!
+  providerAccountId: ID!
+  refresh_token: String
+  access_token: String
+  expires_at: String
+  token_type: String
+  scope: String
+  id_token: String
+  session_state: String
+  user: User!
+}

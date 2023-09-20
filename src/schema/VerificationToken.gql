@@ -1,0 +1,28 @@
+extend type Query {
+  verificationToken(id: ID!): VerificationToken
+  verificationTokens: [VerificationToken]!
+}
+
+extend type Mutation {
+  createVerificationToken(
+    identifier: ID!
+    token: String!
+    expires: DateTime!
+  ): VerificationToken!
+  updateVerificationToken(
+    id: ID!
+    identifier: ID!
+    token: String!
+    expires: DateTime!
+  ): VerificationToken!
+  deleteVerificationToken(id: ID!): VerificationToken!
+}
+
+type VerificationToken {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime
+  identifier: String!
+  token: String!
+  expires: DateTime!
+}

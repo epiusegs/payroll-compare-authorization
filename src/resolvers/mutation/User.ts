@@ -3,6 +3,8 @@ import { GraphQLContext } from '../../context';
 type UserCreateInput = {
   name: string;
   email: string;
+  emailVerified: string;
+  image: string;
 };
 type UserUpdateInput = {
   id: string;
@@ -22,10 +24,7 @@ export const mutation = {
     context: GraphQLContext
   ) => {
     return context.prisma.user.create({
-      data: {
-        name: args.name,
-        email: args.email,
-      },
+      data: args,
     });
   },
   updateUser: (
@@ -34,10 +33,7 @@ export const mutation = {
     context: GraphQLContext
   ) => {
     return context.prisma.user.update({
-      data: {
-        name: args.name,
-        email: args.email,
-      },
+      data: args,
       where: {
         id: args.id,
       },
