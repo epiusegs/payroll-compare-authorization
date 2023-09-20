@@ -37,6 +37,17 @@ export const query = {
       },
     });
   },
+  userByEmail: (
+    parent: unknown,
+    args: { email: string },
+    context: GraphQLContext
+  ) => {
+    return context.prisma.user.findUnique({
+      where: {
+        email: args.email,
+      },
+    });
+  },
 };
 
 export const resolver = {
@@ -53,10 +64,10 @@ export const resolver = {
     return parent.name;
   },
   email: (parent: User) => {
-    return parent.name;
+    return parent.email;
   },
   selectedClientId: (parent: User) => {
-    return parent.name;
+    return parent.selectedClientId;
   },
   selectedClient: (parent: User, args: {}, context: GraphQLContext) => {
     if (!parent.selectedClientId) {

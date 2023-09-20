@@ -2,6 +2,7 @@ extend type Query {
   user(id: ID!): User
   users: [User!]!
   usersNotRelatedToClient(clientId: ID!): [User!]!
+  userByEmail(email: String): User
 }
 
 extend type Mutation {
