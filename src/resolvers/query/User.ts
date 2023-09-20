@@ -12,6 +12,31 @@ export const query = {
   users: (parent: unknown, args: {}, context: GraphQLContext) => {
     return context.prisma.user.findMany();
   },
+  usersNotRelatedToClient: async (
+    parent: unknown,
+    args: { clientId: string },
+    context: GraphQLContext
+  ) => {
+    const usersInClient = await context.prisma.clientUser.findMany({
+      select: {
+        userId: true,
+      },
+      where: {
+        clientId: args.clientId,
+      },
+      distinct: 'userId',
+    });
+
+    return context.prisma.user.findMany({
+      where: {
+        id: {
+          notIn: usersInClient.map((cu) => {
+            return cu.userId;
+          }),
+        },
+      },
+    });
+  },
 };
 
 export const resolver = {

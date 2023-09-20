@@ -1,6 +1,7 @@
 extend type Query {
   user(id: ID!): User
   users: [User!]!
+  usersNotRelatedToClient(clientId: ID!): [User!]!
 }
 
 extend type Mutation {
@@ -20,4 +21,5 @@ type User {
   selectedClient: Client
   clientUsers: [ClientUser!]!
   userRoles: [UserRole!]!
+  primaryUserRoles: UserRole!
 }
