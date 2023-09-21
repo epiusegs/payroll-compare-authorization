@@ -35,9 +35,9 @@ phases:
       - docker push $REPOSITORY_URI:latest-remover
       - docker push $REPOSITORY_URI:$IMAGE_TAG-remover
       - echo Writing image definitions file...
-      - printf '[{"name":"autghorization-dev","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.dev.json
-      - printf '[{"name":"autghorization-qa","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.qa.json
-      - printf '[{"name":"autghorization-prod","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.prod.json
+      - printf '[{"name":"authorization-dev","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.dev.json
+      - printf '[{"name":"authorization-qa","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.qa.json
+      - printf '[{"name":"authorization-prod","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.prod.json
 cache:
   paths:
     - 'node_modules/**/*' # Cache `node_modules` for faster `npm i`
