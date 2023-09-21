@@ -17,7 +17,8 @@
     "lint": "eslint --ignore-path .eslintignore --ext .js,.ts .",
     "lint:fix": "npm run lint -- --fix",
     "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
-    "generate": "prisma generate"
+    "generate": "prisma generate",
+    "ps": "prisma studio"
   },
   "author": "Armand Maree",
   "license": "ISC",
