@@ -26,6 +26,12 @@ app.use('/health', (_req, res) => {
     message: 'Service is running',
   });
 });
+app.use('/api/health', (_req, res) => {
+  res.status(200).send({
+    name: 'payroll-compare-authorization',
+    message: 'Service is running',
+  });
+});
 
 const yoga = createYoga({
   schema: applyMiddleware(schema, graphqlLogger, graphqlInputsLogger),
