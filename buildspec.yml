@@ -8,7 +8,7 @@ phases:
       - echo Logging in to Amazon ECR...
       - aws --version
       - $(aws ecr get-login --region us-east-2 --no-include-email)
-      # - REPOSITORY_URI=456217261092.dkr.ecr.us-east-2.amazonaws.com/payroll-compare-frontend
+      # - REPOSITORY_URI=456217261092.dkr.ecr.us-east-2.amazonaws.com/payroll-compare-authorization
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=${COMMIT_HASH:=latest}
       - docker pull $REPOSITORY_URI:$IMAGE_TAG-compiler || docker pull $REPOSITORY_URI:latest-compiler || true
