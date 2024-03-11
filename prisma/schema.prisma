@@ -77,7 +77,7 @@ model Session {
   updatedAt    DateTime? @updatedAt @db.Timestamptz(6)
   userId       String
   sessionToken String    @unique
-  expires      DateTime
+  expires      DateTime  @db.Timestamptz(6)
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
@@ -86,7 +86,7 @@ model VerificationToken {
   createdAt  DateTime  @default(now()) @db.Timestamptz(6)
   updatedAt  DateTime? @updatedAt @db.Timestamptz(6)
   identifier String
-  expires    DateTime
+  expires    DateTime  @db.Timestamptz(6)
   token      String    @unique
 
   @@unique([identifier, token])
