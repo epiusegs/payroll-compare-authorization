@@ -1,0 +1,49 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      docker: 20
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws --version
+      - $(aws ecr get-login --region us-east-2 --no-include-email)
+      # - REPOSITORY_URI=456217261092.dkr.ecr.us-east-2.amazonaws.com/payroll-compare-authorization
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=${COMMIT_HASH:=latest}
+      - docker pull $REPOSITORY_URI:$IMAGE_TAG-compiler || docker pull $REPOSITORY_URI:latest-compiler || true
+      - docker pull $REPOSITORY_URI:$IMAGE_TAG-remover || docker pull $REPOSITORY_URI:latest-remover || true
+      - docker pull $REPOSITORY_URI:$IMAGE_TAG || docker pull $REPOSITORY_URI:latest || true
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - docker build --target ts-compiler --cache-from $REPOSITORY_URI:$IMAGE_TAG-compiler --cache-from $REPOSITORY_URI:latest-compiler --build-arg BUILDKIT_INLINE_CACHE=1 --tag $REPOSITORY_URI:$IMAGE_TAG-compiler .
+      - docker build --target ts-remover --cache-from $REPOSITORY_URI:$IMAGE_TAG-remover --cache-from $REPOSITORY_URI:latest-remover --cache-from $REPOSITORY_URI:$IMAGE_TAG-compiler --build-arg BUILDKIT_INLINE_CACHE=1 --tag $REPOSITORY_URI:$IMAGE_TAG-remover .
+      - docker build --cache-from $REPOSITORY_URI:$IMAGE_TAG --cache-from $REPOSITORY_URI:$IMAGE_TAG-compiler --cache-from $REPOSITORY_URI:$IMAGE_TAG-remover --cache-from $REPOSITORY_URI:$latest --build-arg BUILDKIT_INLINE_CACHE=1 --tag $REPOSITORY_URI:$IMAGE_TAG .
+      - docker tag $REPOSITORY_URI:$IMAGE_TAG-compiler $REPOSITORY_URI:latest-compiler
+      - docker tag $REPOSITORY_URI:$IMAGE_TAG-remover $REPOSITORY_URI:latest-remover
+      - docker tag $REPOSITORY_URI:$IMAGE_TAG $REPOSITORY_URI:latest
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker images...
+      - docker push $REPOSITORY_URI:latest
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - docker push $REPOSITORY_URI:latest-compiler
+      - docker push $REPOSITORY_URI:$IMAGE_TAG-compiler
+      - docker push $REPOSITORY_URI:latest-remover
+      - docker push $REPOSITORY_URI:$IMAGE_TAG-remover
+      - echo Writing image definitions file...
+      - printf '[{"name":"authorization-dev","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.dev.json
+      - printf '[{"name":"authorization-qa","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.qa.json
+      - printf '[{"name":"authorization-prod","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.prod.json
+cache:
+  paths:
+    - 'node_modules/**/*' # Cache `node_modules` for faster `npm i`
+    - '.next/cache/**/*' # Cache Next.js for faster application rebuilds
+artifacts:
+  files:
+    - imagedefinitions.dev.json
+    - imagedefinitions.qa.json
+    - imagedefinitions.prod.json

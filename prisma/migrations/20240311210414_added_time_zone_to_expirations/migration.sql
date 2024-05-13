@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Session" ALTER COLUMN "expires" SET DATA TYPE TIMESTAMPTZ(6);
+
+-- AlterTable
+ALTER TABLE "VerificationToken" ALTER COLUMN "expires" SET DATA TYPE TIMESTAMPTZ(6);

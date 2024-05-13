@@ -4,14 +4,14 @@ extend type Query {
 }
 
 extend type Mutation {
-  createRole(clientId: ID!, name: String!): Role!
-  updateRole(id: ID!, clientId: ID!, name: String!): Role!
+  createRole(clientId: ID, name: String!): Role!
+  updateRole(id: ID!, clientId: ID, name: String!): Role!
   deleteRole(id: ID!): Role!
 }
 
 type Role {
   id: ID!
-  clientId: ID!
+  clientId: ID
   createdAt: DateTime!
   updatedAt: DateTime
   name: String!
