@@ -12,6 +12,7 @@ import schema from './schema';
 import logger, { logLevel } from './utils/logger';
 import { createContext } from './context';
 import { graphqlLogger, graphqlInputsLogger } from './utils/graphql-logger';
+import authRouter from './auth';
 
 const PORT = process.env.PORT || 8080;
 
@@ -38,6 +39,7 @@ const yoga = createYoga({
   context: createContext,
 });
 app.use('/graphql', yoga);
+app.use('/auth', authRouter);
 app.use(AWSXRay.express.closeSegment());
 
 app.listen(PORT, () => {
