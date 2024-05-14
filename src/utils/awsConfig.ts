@@ -2,9 +2,9 @@ import AWS from 'aws-sdk';
 
 const awsCreds = {
   accessKeyId: process.env.ACCESS_ID,
-  SecretAccessKey: process.env.SECRET_ACCESS,
+  secretAccessKey: process.env.SECRET_ACCESS,
   sessionToken: process.env.SESSION_TOKEN,
-  region: process.env.region,
+  region: process.env.REGION,
 };
 
 AWS.config.update(awsCreds);
