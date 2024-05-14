@@ -1,20 +1,21 @@
 import { Router, json } from 'express';
 import jwt, { Secret } from 'jsonwebtoken';
-import AWS from 'aws-sdk';
 import {
   CognitoUserPool,
   CognitoUser,
   AuthenticationDetails,
 } from 'amazon-cognito-identity-js';
 import { PrismaClient } from '@prisma/client';
-import awsCreds from '../utils/awsConfig';
 
 const authRouter: Router = Router();
 const prisma = new PrismaClient();
 const parseJSON = json();
 authRouter.use(parseJSON);
-
-AWS.config.update(awsCreds);
+// Configure Cognito user pool
+const userPool = new CognitoUserPool({
+  UserPoolId: process.env.COGNITO_USERPOOLID as string,
+  ClientId: process.env.COGNITO_CLIENTID as string,
+});
 
 authRouter.post('/login', async (req, res) => {
   const key: Secret | undefined = process.env.ACCESS_KEY;
@@ -30,12 +31,6 @@ authRouter.post('/login', async (req, res) => {
     });
     return;
   }
-
-  // Configure Cognito user pool
-  const userPool = new CognitoUserPool({
-    UserPoolId: process.env.COGNITO_USERPOOLID as string,
-    ClientId: process.env.COGNITO_CLIENTID as string,
-  });
 
   // Create authentication details
   const authenticationData = {
@@ -88,15 +83,9 @@ authRouter.post('/login', async (req, res) => {
   });
 });
 
-authRouter.post('/newpassword', (req, res) => {
+authRouter.post('/newpassword', async (req, res) => {
   const key: Secret | undefined = process.env.ACCESS_KEY;
   const { username, newPassword = '' } = req.body;
-
-  // Configure Cognito user pool
-  const userPool = new CognitoUserPool({
-    UserPoolId: process.env.COGNITO_USERPOOLID as string,
-    ClientId: process.env.COGNITO_CLIENTID as string,
-  });
 
   // Create Cognito user object
   const userData = {
@@ -104,21 +93,33 @@ authRouter.post('/newpassword', (req, res) => {
     Pool: userPool,
   };
 
+  const user = await prisma.user.findUnique({
+    where: { email: req.body.username },
+  });
+
+  if (!user) {
+    res.status(501).json({
+      error:
+        'User has not been created yet. This probably means they have not signed in yet.',
+    });
+    return;
+  }
+
   const cognitoUser = new CognitoUser(userData);
 
   cognitoUser.completeNewPasswordChallenge(newPassword, null, {
-    onSuccess: (session) => {
+    onSuccess: () => {
       // Password updated successfully, generate a session token
       const options: jwt.SignOptions = {
         header: { alg: 'HS256' },
       };
       const load = {
-        name: session.getIdToken().payload.email,
-        email: session.getIdToken().payload.email,
+        name: user.email,
+        email: user.email,
         picture: null,
-        sub: session.getIdToken().payload.sub,
-        userId: session.getIdToken().payload.sub,
-        clientId: session.getIdToken().payload.aud,
+        sub: user.id,
+        userId: user.id,
+        clientId: user.selectedClientId,
       };
 
       const jwtToken = jwt.sign(load, key as string, options);
