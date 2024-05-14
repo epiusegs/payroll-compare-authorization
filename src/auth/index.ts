@@ -1,29 +1,35 @@
 import { Router, json } from 'express';
 import jwt, { Secret } from 'jsonwebtoken';
-import dotenv from 'dotenv';
 import AWS from 'aws-sdk';
 import {
   CognitoUserPool,
   CognitoUser,
   AuthenticationDetails,
 } from 'amazon-cognito-identity-js';
+import { PrismaClient } from '@prisma/client';
+import awsCreds from '../utils/awsConfig';
 
 const authRouter: Router = Router();
+const prisma = new PrismaClient();
 const parseJSON = json();
 authRouter.use(parseJSON);
-dotenv.config();
-const awsCreds = {
-  accessKeyId: process.env.ACCESS_ID,
-  SecretAccessKey: process.env.SECRET_ACCESS,
-  sessionToken: process.env.SESSION_TOKEN,
-  region: process.env.region,
-};
 
 AWS.config.update(awsCreds);
 
 authRouter.post('/login', async (req, res) => {
   const key: Secret | undefined = process.env.ACCESS_KEY;
-  const { username, newPassword = '' } = req.body;
+  const { username } = req.body;
+  const user = await prisma.user.findUnique({
+    where: { email: req.body.username },
+  });
+
+  if (!user) {
+    res.status(501).json({
+      error:
+        'User has not been created yet. This probably means they have not signed in yet.',
+    });
+    return;
+  }
 
   // Configure Cognito user pool
   const userPool = new CognitoUserPool({
@@ -49,7 +55,60 @@ authRouter.post('/login', async (req, res) => {
   // Authenticate user
 
   cognitoUser.authenticateUser(authenticationDetails, {
+    onSuccess: () => {
+      const options: jwt.SignOptions = {
+        header: { alg: 'HS256' },
+      };
+      const load = {
+        name: user.email,
+        email: user.email,
+        picture: null,
+        sub: user.id,
+        userId: user.id,
+        clientId: user.selectedClientId,
+      };
+
+      const jwtToken = jwt.sign(load, key as string, options);
+      res.status(200).send(jwtToken);
+    },
+    onFailure: (err) => {
+      // Authentication failed
+      res.status(401).json({
+        error: 'Authentication failed',
+        code: err.code,
+        nestedError: err,
+      });
+      // eslint-disable-next-line prefer-template
+      console.error('Authentication failed due to ' + err.message);
+    },
+    newPasswordRequired: () => {
+      // Set the new password for the user
+      res.status(400).json({ challenge: 'NEW_PASSWORD_REQUIRED' });
+    },
+  });
+});
+
+authRouter.post('/newpassword', (req, res) => {
+  const key: Secret | undefined = process.env.ACCESS_KEY;
+  const { username, newPassword = '' } = req.body;
+
+  // Configure Cognito user pool
+  const userPool = new CognitoUserPool({
+    UserPoolId: process.env.COGNITO_USERPOOLID as string,
+    ClientId: process.env.COGNITO_CLIENTID as string,
+  });
+
+  // Create Cognito user object
+  const userData = {
+    Username: username,
+    Pool: userPool,
+  };
+
+  const cognitoUser = new CognitoUser(userData);
+
+  cognitoUser.completeNewPasswordChallenge(newPassword, null, {
     onSuccess: (session) => {
+      // Password updated successfully, generate a session token
       const options: jwt.SignOptions = {
         header: { alg: 'HS256' },
       };
@@ -65,34 +124,9 @@ authRouter.post('/login', async (req, res) => {
       const jwtToken = jwt.sign(load, key as string, options);
       res.status(200).send(jwtToken);
     },
-    onFailure: () => {
-      // Authentication failed
-      res.status(401).json({ error: 'Authentication failed' });
-    },
-    newPasswordRequired: () => {
-      // Set the new password for the user
-      cognitoUser.completeNewPasswordChallenge(newPassword, null, {
-        onSuccess: (session) => {
-          // Password updated successfully, generate a session token
-          const options: jwt.SignOptions = {
-            header: { alg: 'HS256' },
-          };
-          const load = {
-            name: session.getIdToken().payload.email,
-            email: session.getIdToken().payload.email,
-            picture: null,
-            sub: session.getIdToken().payload.sub,
-            userId: session.getIdToken().payload.sub,
-            clientId: session.getIdToken().payload.aud,
-          };
-
-          const jwtToken = jwt.sign(load, key as string, options);
-          res.status(200).send(jwtToken);
-        },
-        onFailure: () => {
-          res.status(500).json({ error: 'Error setting new password' });
-        },
-      });
+    onFailure: (err) => {
+      console.error({ error: err });
+      res.status(500).json({ error: 'Error setting new password' });
     },
   });
 });
@@ -112,24 +146,6 @@ authRouter.post('/verify', (req, res) => {
       string,
       any
     >;
-
-    // Check if the payload contains all the required fields
-    const requiredFields = [
-      'name',
-      'email',
-      'sub',
-      'userId',
-      'clientId',
-      'iat',
-    ];
-    // eslint-disable-next-line no-restricted-syntax
-    for (const field of requiredFields) {
-      if (!(field in decodedPayload)) {
-        return res.status(400).json({
-          error: `Missing field '${field}' in the token payload`,
-        });
-      }
-    }
 
     // If verification succeeds and payload is valid, return the decoded payload
     res.status(200).json({ decodedPayload });
