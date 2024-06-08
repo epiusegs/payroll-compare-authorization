@@ -13,7 +13,9 @@
       "console": "integratedTerminal",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run-script", "dev"],
-      "env": {}
+      "env": {
+        "PORT": "8081"
+      }
     }
   ]
 }
